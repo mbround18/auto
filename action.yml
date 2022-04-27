@@ -1,0 +1,46 @@
+name: Auto
+author: mbround18
+description: Run Auto by Intuit on your repo
+inputs:
+  jqVersion: 
+    description: 'Version if jq to use'
+    required: true
+    default: '1.6'
+    type: string
+  command:
+    description: 'Auto command to run'
+    required: true
+    default: "shipit -v"
+    type: string
+    
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Bins
+      shell: bash
+      run: |
+        export BIN_PATH="$HOME/.local/bin"
+        mkdir -p "${BIN_PATH}"
+        echo "${BIN_PATH}" >> $GITHUB_PATH
+    
+    - name: Setup JQ
+      shell: bash
+      run: |
+        export jQ_PATH="$HOME/.local/bin/jq"
+        wget -O "${JQ_PATH}" "https://github.com/stedolan/jq/releases/download/jq-${{inputs.jqVersion}}/jq-linux64"
+        chmod +x "${JQ_PATH}"
+        
+    - name: Setup Auto
+      shell: bash
+      run: |
+        export AUTO_PATH="$HOME/.local/bin/auto"
+        export LATEST_TAG="$(curl https://api.github.com/repos/intuit/auto/releases/latest -s | jq .name -r | xargs)"
+        curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > "${AUTO_PATH}"
+        chmod +x "${AUTO_PATH}"
+     
+    - name: Setup Bins
+      shell: bash
+      run: "$HOME/.local/bin/auto" "${{ inputs.command }}"
+        
+   
+        
