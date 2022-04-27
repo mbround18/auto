@@ -26,22 +26,35 @@ runs:
     - name: Setup JQ
       shell: bash
       run: |
+        echo "Setting jq path..."
         export jQ_PATH="$HOME/.local/bin/jq"
+        
+        echo "Downloading jq..."
         wget -O "${JQ_PATH}" "https://github.com/stedolan/jq/releases/download/jq-${{inputs.jqVersion}}/jq-linux64"
+        
+        echo "Making jq exectuabe..."
         chmod +x "${JQ_PATH}"
+        
+        echo "jq setup complete..."
         
     - name: Setup Auto
       shell: bash
       run: |
+        echo "Setting auto path..."
         export AUTO_PATH="$HOME/.local/bin/auto"
+        
+        echo "Fetching latest auto release..."
         export LATEST_TAG="$(curl https://api.github.com/repos/intuit/auto/releases/latest -s | jq .name -r | xargs)"
+        
+        echo "Downloading auto..."
         curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > "${AUTO_PATH}"
+        
+        echo "Making auto executable..."
         chmod +x "${AUTO_PATH}"
      
+        echo "auto setup complete..."
+    
     - name: Setup Bins
       shell: bash
       run: |
         auto "${{ inputs.command }}"
-        
-   
-        
