@@ -1,0 +1,10 @@
+{
+  "plugins": ["git-tag"],
+  "author": "mbround18 <12646562+mbround18@users.noreply.github.com>",
+  "onlyPublishWithReleaseLabel": false,
+  "labels": [
+    { "releaseType": "major", "name": "Version: Major" },
+    { "releaseType": "minor", "name": "Version: Minor" },
+    { "releaseType": "patch", "name": "Version: Patch" }
+  ]
+}
