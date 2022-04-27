@@ -22,6 +22,6 @@ jobs:
      - name: release
        env: 
         GH_TOKEN: ${{ secrets.GH_TOKEN }} # <- This is for auto
-       uses: mbround18/auto@v1.0.0
+       uses: mbround18/auto@v1
 ```
 
