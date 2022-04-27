@@ -1,0 +1,12 @@
+name: Release
+
+on: [push]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonse
+        uses: actions/checkout@v3
+      - name: Release
+        uses: .
