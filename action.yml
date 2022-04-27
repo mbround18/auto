@@ -41,7 +41,7 @@ runs:
     - name: Setup Bins
       shell: bash
       run: |
-        "$HOME/.local/bin/auto" "${{ inputs.command }}"
+        auto "${{ inputs.command }}"
         
    
         
