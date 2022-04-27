@@ -1,6 +1,8 @@
 name: Auto Release Tool by Intuit
 author: mbround18
 description: Run Auto by Intuit on your repo
+icon: arrow-up
+color: #FF00FF
 inputs:
   jqVersion:
     description: 'Version if jq to use'
