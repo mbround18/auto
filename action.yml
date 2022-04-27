@@ -10,7 +10,7 @@ inputs:
   command:
     description: 'Auto command to run'
     required: true
-    default: "shipit -v"
+    default: 'shipit -v'
     type: string
     
 runs:
