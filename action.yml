@@ -19,7 +19,7 @@ runs:
     - name: Setup Bins
       shell: bash
       run: |
-        export BIN_PATH="${{ env.GITHUB_ACTION_PATH }}/.bin"
+        export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
         mkdir -p "${BIN_PATH}"
         echo "${BIN_PATH}" >> $GITHUB_PATH
     
@@ -27,7 +27,7 @@ runs:
       shell: bash
       run: |
         echo "Setting jq path..."
-        export JQ_PATH="${{ env.GITHUB_ACTION_PATH }}/.bin/jq"
+        export JQ_PATH="${GITHUB_ACTION_PATH}/.bin/jq"
         echo "JQ_PATH=${JQ_PATH}"
         
         echo "Downloading jq..."
@@ -42,7 +42,7 @@ runs:
       shell: bash
       run: |
         echo "Setting auto path..."
-        export AUTO_PATH="${{ env.GITHUB_ACTION_PATH }}/.bin/auto"
+        export AUTO_PATH="${GITHUB_ACTION_PATH}/.bin/auto"
         echo "AUTO_PATH=${AUTO_PATH}"
         
         echo "Fetching latest auto release..."
