@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          depth: 0 # <- Suggested to get all tags
+          fetch-depth: 0 # <- Suggested to get all tags
           token: ${{ secrets.GH_TOKEN }} # <- This is required
 
       - name: release
