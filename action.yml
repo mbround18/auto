@@ -1,20 +1,25 @@
 name: Auto Release Tool by Intuit
 author: mbround18
 description: Run Auto by Intuit on your repo
-branding: 
+branding:
   icon: arrow-up
   color: purple
 inputs:
   jqVersion:
-    description: 'Version if jq to use'
+    description: "Version if jq to use"
     required: true
-    default: '1.6'
-    type: string
+    default: "1.6"
+  autoVersion:
+    description: "Version of auto to install"
+    required: true
+    default: "latest"
+  token:
+    description: "Admin Pat to use"
+    required: true
   command:
-    description: 'Auto command to run'
+    description: "Auto command to run"
     required: true
-    default: 'shipit -v'
-    type: string
+    default: "shipit -v"
 runs:
   using: "composite"
   steps:
@@ -24,8 +29,10 @@ runs:
         export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
         mkdir -p "${BIN_PATH}"
         echo "${BIN_PATH}" >> $GITHUB_PATH
+
     - name: Setup JQ
       shell: bash
+      if: inputs.autoVersion == 'latest'
       run: |
         echo "Setting jq path..."
         export JQ_PATH="${GITHUB_ACTION_PATH}/.bin/jq"
@@ -35,20 +42,31 @@ runs:
         echo "Making jq exectuabe..."
         chmod +x "${JQ_PATH}"
         echo "jq setup complete..."
+
     - name: Setup Auto
       shell: bash
       run: |
         echo "Setting auto path..."
         export AUTO_PATH="${GITHUB_ACTION_PATH}/.bin/auto"
         echo "AUTO_PATH=${AUTO_PATH}"
-        echo "Fetching latest auto release..."
-        export LATEST_TAG="$(curl https://api.github.com/repos/intuit/auto/releases/latest -s | jq .name -r | xargs)"
+
+        export AUTO_URL=""
         echo "Downloading auto..."
-        curl -vkL -o - https://github.com/intuit/auto/releases/download/v10.28.0/auto-linux.gz | gunzip > "${AUTO_PATH}"
+        if [ "${{ inputs.autoVersion }}" = "latest" ]; then
+          echo "Fetching latest auto release..."
+          export LATEST_TAG="$(curl https://api.github.com/repos/intuit/auto/releases/latest -s | jq .name -r | xargs)"
+          AUTO_URL="https://github.com/intuit/auto/releases/download/${LATEST_TAG}/auto-linux.gz"
+        else
+          AUTO_URL="https://github.com/intuit/auto/releases/download/${{ inputs.autoVersion }}/auto-linux.gz"
+        fi
+        curl -vkL -o - "${AUTO_URL}" | gunzip > "${AUTO_PATH}"
         echo "Making auto executable..."
         chmod +x "${AUTO_PATH}"
         echo "auto setup complete..."
+
     - name: Setup Bins
       shell: bash
+      env:
+        GH_TOKEN: "${{ inputs.token }}"
       run: |
         auto ${{ inputs.command }}
