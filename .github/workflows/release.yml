@@ -11,6 +11,7 @@ jobs:
           depth: 0 # <- Suggested to get all tags
           token: ${{ secrets.GH_TOKEN }} # <- This is required
 
+      - run: git fetch --tags
       - name: Release
         uses: ./
         with:
