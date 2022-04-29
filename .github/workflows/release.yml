@@ -2,16 +2,16 @@ name: Release
 
 on: [push]
 
-env:
-  GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-        with: 
-         depth: 0 # <- Suggested to get all tags
-         token: ${{ secrets.GH_TOKEN }} # <- This is required
+        with:
+          depth: 0 # <- Suggested to get all tags
+          token: ${{ secrets.GH_TOKEN }} # <- This is required
+
       - name: Release
         uses: ./
+        with:
+          token: ${{ secrets.GH_TOKEN }}
