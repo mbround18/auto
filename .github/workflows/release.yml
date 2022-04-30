@@ -1,7 +1,10 @@
 name: Release
 
-on: [push]
-
+on:
+  push:
+    paths:
+    - 'action.yml'
+    
 jobs:
   release:
     runs-on: ubuntu-latest
