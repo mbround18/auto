@@ -20,7 +20,7 @@ jobs:
           token: ${{ secrets.GH_TOKEN }} # <- This is required
 
       - name: release
-        uses: mbround18/auto@v1
+        uses: mbround18/auto@v1.1.0
         with:
           token: ${{ secrets.GH_TOKEN }} # <- This is for auto
 ```
