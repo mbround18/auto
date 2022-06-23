@@ -20,6 +20,10 @@ inputs:
     description: "Auto command to run"
     required: true
     default: "shipit -v"
+outputs:
+  version:
+    description: "Outputs the auto version."
+    value: ${{ steps.auto.outputs.version }}
 runs:
   using: "composite"
   steps:
@@ -65,8 +69,23 @@ runs:
         echo "auto setup complete..."
 
     - name: Setup Bins
+      id: auto
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
-        auto ${{ inputs.command }}
+        cleanup() {
+          EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
+          VERSION=$(tail -1 /tmp/auto.out | cut -d ":" -f2 | xargs)
+          echo "Exit Code=${EXIT_STATUS}"
+          echo "Version=${VERSION}"
+          echo "::set-output name=version::${VERSION}"
+          exit ${EXIT_STATUS}
+        }
+
+        # Setting up script traps
+        trap 'cleanup' EXIT INT TERM
+
+        # Launch Auto
+        auto ${{ inputs.command }} 2>&1 | tee /tmp/auto.out
+
