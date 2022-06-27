@@ -74,32 +74,54 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
-        cleanup() {
-          EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
-          LAST_LINE="$(tail -1 /tmp/auto.out)"
-          
-          if [ ! "$EXIT_STATUS" -eq 0 ]; then 
-            exit ${EXIT_STATUS}  
-          fi 
+        OUTPUT_FILE="/tmp/auto.out"
         
-          VERSION=""
-        
-          case "${LAST_LINE}" in
-            *releases/tag* | *releases/download*)
-              VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
+        lineExists() {
+          LINE="$1"
+          FILE="$2"
+          case `grep -F "${LINE}" "${FILE}" >/dev/null; echo $?` in
+            0)
+              echo 0
             ;;
-            *canary*)
-              VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)
+            1)
+              echo 1
             ;;
             *)
-              VERSION=
+              echo 1
             ;;
           esac
+        }
         
+        getVersion() {
+          LINE="$1"
+          FILE="$2"
+          PREFIX="$3"
+          
+          echo "$(cat "${FILE}" | grep -hnr -A2 -B2 --no-group-separator "${LINE}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs)"
+        }
+        
+        cleanup() {
+          EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)          
+          if [ ! "$EXIT_STATUS" -eq 0 ]; then 
+            exit ${EXIT_STATUS}  
+          fi
+          
+          NO_CANARY="None of the plugins that you are using implement the \`canary\` command"
+          CALLING_CANARY="Calling canary hook"
+          CREATED_RELEASE="Created GitHub release"
+          
+          VERSION=""
+          if $(lastLine "${NO_CANARY}" "${OUTPUT_FILE}"); then
+            VERSION=
+          elif $(lastLine "${CALLING_CANARY}" "${OUTPUT_FILE}")
+            VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
+          else
+            VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
+          fi
+        
+          echo "::set-output name=version::${VERSION}"
           echo "Exit Code=${EXIT_STATUS}"
           echo "Version=${VERSION}"
-          echo "::set-output name=version::${VERSION}"
-          
           exit ${EXIT_STATUS}
         }
 
@@ -107,5 +129,5 @@ runs:
         trap 'cleanup' EXIT INT TERM
 
         # Launch Auto
-        auto ${{ inputs.command }} 2>&1 | tee /tmp/auto.out
+        auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
 
