@@ -28,14 +28,14 @@ runs:
   using: "composite"
   steps:
     - name: Setup Bins
-      shell: bash
+      shell: sh
       run: |
         export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
         mkdir -p "${BIN_PATH}"
         echo "${BIN_PATH}" >> $GITHUB_PATH
 
     - name: Setup JQ
-      shell: bash
+      shell: sh
       if: inputs.autoVersion == 'latest'
       run: |
         echo "Setting jq path..."
@@ -48,7 +48,7 @@ runs:
         echo "jq setup complete..."
 
     - name: Setup Auto
-      shell: bash
+      shell: sh
       run: |
         echo "Setting auto path..."
         export AUTO_PATH="${GITHUB_ACTION_PATH}/.bin/auto"
@@ -70,7 +70,7 @@ runs:
 
     - name: Setup Bins
       id: auto
-      shell: bash
+      shell: sh
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
@@ -79,7 +79,7 @@ runs:
         lineExists() {
           LINE="$1"
           FILE="$2"
-          case `grep -F "${LINE}" "${FILE}" >/dev/null; echo $?` in
+          case $(grep -F "${LINE}" "${FILE}" >/dev/null; echo $?) in
             0)
               echo 0
             ;;
@@ -96,27 +96,25 @@ runs:
           LINE="$1"
           FILE="$2"
           PREFIX="$3"
-          echo "pre cat"
-          LINES="$(cat "${FILE}" | grep -hnr -A2 -B2 --no-group-separator "${LINE}")"
-          echo "post cat" 
-          echo "$(echo "${LINES}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs)"
+          grep -hnr -A2 -B2 --no-group-separator "${LINE}" < "${FILE}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs
         }
         
         cleanup() {
-          EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)          
-          if [ ! "$EXIT_STATUS" -eq 0 ]; then 
+          EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
+          if [ ! "$EXIT_STATUS" -eq 0 ]; then
             exit ${EXIT_STATUS}
           else
             echo "Looks like auto ran successfully! Collecting results for action output."
           fi
-          
+        
           NO_CANARY="None of the plugins that you are using implement the \`canary\` command"
           CALLING_CANARY="Calling canary hook"
           CREATED_RELEASE="Created GitHub release"
-          
+        
           VERSION=""
           IS_NOT_CANARY=$(lineExists "${NO_CANARY}" "${OUTPUT_FILE}")
           IS_CANARY=$(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}")
+          
           if [ "${IS_NOT_CANARY}" -eq 0 ]; then
             echo "No canary found, no version info needed."
             VERSION=
@@ -125,7 +123,7 @@ runs:
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
             echo "Version Tagged! Grabbing tag for action output."
-            VERSION="$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
+            VERSION="$(getVersion "${CREATED_RELEASE}" "${OUTPUT_FILE}" "tag:")"
           fi
         
           echo "::set-output name=version::${VERSION}"
@@ -139,4 +137,3 @@ runs:
 
         # Launch Auto
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
-
