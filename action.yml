@@ -96,8 +96,10 @@ runs:
           LINE="$1"
           FILE="$2"
           PREFIX="$3"
+          echo "pre cat"
           LINES="$(cat "${FILE}" | grep -hnr -A2 -B2 --no-group-separator "${LINE}")"
-          echo "$(echo "${LINES}" | cut -d ":" -f2 | xargs)"
+          echo "post cat" 
+          echo "$(echo "${LINES}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs)"
         }
         
         cleanup() {
@@ -120,7 +122,6 @@ runs:
             VERSION=
           elif [ "${IS_CANARY}" -eq 0 ]; then
             echo "Canary found! Grabbing canary version for action output.."
-            cat "${OUTPUT_FILE}" | grep -hnr -A2 -B2 --no-group-separator "${CALLING_CANARY}"
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
             echo "Version Tagged! Grabbing tag for action output."
