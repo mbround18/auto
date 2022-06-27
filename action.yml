@@ -83,12 +83,19 @@ runs:
           fi 
         
           VERSION=""
-          if $(echo "${LAST_LINE}" | grep -q "releases/tag"); then 
-            VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
-          else
-            VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)    
-          fi
-
+        
+          case "${LAST_LINE}" in
+            *releases/tag*)
+              VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
+            ;;
+            *canary*)
+              VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)
+            ;;
+            *)
+              VERSION=None
+            ;;
+          esac
+        
           echo "Exit Code=${EXIT_STATUS}"
           echo "Version=${VERSION}"
           echo "::set-output name=version::${VERSION}"
