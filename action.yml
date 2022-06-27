@@ -76,10 +76,23 @@ runs:
       run: |
         cleanup() {
           EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)
-          VERSION=$(tail -1 /tmp/auto.out | cut -d ":" -f2 | xargs)
+          LAST_LINE="$(tail -1 /tmp/auto.out)"
+          
+          if [ ! "$EXIT_STATUS" -eq 0 ]; then 
+            exit ${EXIT_STATUS}  
+          fi 
+        
+          VERSION=""
+          if [ "${LAST_LINE}" ~= "github.com" ]; then 
+            VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
+          else
+            VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)    
+          fi
+
           echo "Exit Code=${EXIT_STATUS}"
           echo "Version=${VERSION}"
           echo "::set-output name=version::${VERSION}"
+          
           exit ${EXIT_STATUS}
         }
 
