@@ -96,7 +96,7 @@ runs:
           LINE="$1"
           FILE="$2"
           PREFIX="$3"
-          
+          echo "Parsing ${FILE} for ${LINE}"
           echo "$(cat "${FILE}" | grep -hnr -A2 -B2 --no-group-separator "${LINE}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs)"
         }
         
