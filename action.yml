@@ -111,12 +111,14 @@ runs:
           CREATED_RELEASE="Created GitHub release"
           
           VERSION=""
-          if $(lineExists "${NO_CANARY}" "${OUTPUT_FILE}"); then
+          IS_NOT_CANARY=$(lineExists "${NO_CANARY}" "${OUTPUT_FILE}")
+          IS_CANARY=$(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}")
+          if [ "${IS_NOT_CANARY}" -eq 0 ]; then
             VERSION=
-          elif $(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}"); then
+          elif [ "${IS_CANARY}" -eq 0 ]; then
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
-            VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
+            VERSION="$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
           fi
         
           echo "::set-output name=version::${VERSION}"
