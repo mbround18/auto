@@ -113,7 +113,7 @@ runs:
           VERSION=""
           if $(lastLine "${NO_CANARY}" "${OUTPUT_FILE}"); then
             VERSION=
-          elif $(lastLine "${CALLING_CANARY}" "${OUTPUT_FILE}")
+          elif $(lastLine "${CALLING_CANARY}" "${OUTPUT_FILE}"); then
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
