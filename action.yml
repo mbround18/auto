@@ -111,9 +111,9 @@ runs:
           CREATED_RELEASE="Created GitHub release"
           
           VERSION=""
-          if $(lastLine "${NO_CANARY}" "${OUTPUT_FILE}"); then
+          if $(lineExists "${NO_CANARY}" "${OUTPUT_FILE}"); then
             VERSION=
-          elif $(lastLine "${CALLING_CANARY}" "${OUTPUT_FILE}"); then
+          elif $(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}"); then
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
