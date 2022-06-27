@@ -92,7 +92,7 @@ runs:
               VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)
             ;;
             *)
-              VERSION=None
+              VERSION=
             ;;
           esac
         
