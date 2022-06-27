@@ -83,7 +83,7 @@ runs:
           fi 
         
           VERSION=""
-          if [ "${LAST_LINE}" ?? "releases/tag" ]; then 
+          if $(echo "${LAST_LINE}" | grep -q "release/tag"); then 
             VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
           else
             VERSION=$(echo "${LAST_LINE}" | cut -d ":" -f2 | xargs)    
