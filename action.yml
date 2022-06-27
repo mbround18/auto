@@ -85,7 +85,7 @@ runs:
           VERSION=""
         
           case "${LAST_LINE}" in
-            *releases/tag*)
+            *releases/(tag|download)*)
               VERSION="$(echo "${LAST_LINE}" | cut -d "/" -f8 | xargs)"
             ;;
             *canary*)
