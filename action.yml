@@ -103,7 +103,9 @@ runs:
         cleanup() {
           EXIT_STATUS=$?  # Eg 130 for SIGINT, 128 + (2 == SIGINT)          
           if [ ! "$EXIT_STATUS" -eq 0 ]; then 
-            exit ${EXIT_STATUS}  
+            exit ${EXIT_STATUS}
+          else
+            echo "Looks like auto ran successfully! Collecting results for action output."
           fi
           
           NO_CANARY="None of the plugins that you are using implement the \`canary\` command"
@@ -114,10 +116,13 @@ runs:
           IS_NOT_CANARY=$(lineExists "${NO_CANARY}" "${OUTPUT_FILE}")
           IS_CANARY=$(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}")
           if [ "${IS_NOT_CANARY}" -eq 0 ]; then
+            echo "No canary found, no version info needed."
             VERSION=
           elif [ "${IS_CANARY}" -eq 0 ]; then
+            echo "Canary found! Grabbing canary version for action output.."
             VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
           else
+            echo "Version Tagged! Grabbing tag for action output."
             VERSION="$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "tag:")"
           fi
         
