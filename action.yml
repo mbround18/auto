@@ -117,4 +117,4 @@ runs:
           }
         }
         Write-Output "Version=$Version"
-        Write-Output "::set-output name=version::$VERSION"
+        Write-Output "::set-output name=version::$Version"
