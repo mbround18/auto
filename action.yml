@@ -75,15 +75,12 @@ runs:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
         OUTPUT_FILE="/tmp/auto.out"
-        auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
-        echo "::set-output name=log::$(cat /tmp/auto.out)"
-        
+        auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"      
 
     - name: Parse Version
       shell: pwsh
       id: version
       run: |
-        "${{ steps.auto.outputs.log }}" | | Out-File -FilePath /tmp/auto.out
         $File = "/tmp/auto.out"
         $Version = ""
 
