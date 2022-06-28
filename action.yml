@@ -78,51 +78,43 @@ runs:
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
 
     - name: Parse Version
-      shell: sh
+      shell: pwsh
       id: version
       run: |
-        OUTPUT_FILE="/tmp/auto.out"
-        lineExists() {
-          LINE="$1"
-          FILE="$2"
-          case $(grep -F "${LINE}" "${FILE}" >/dev/null; echo $?) in
-            0)
-              echo 0
-            ;;
-            1)
-              echo 1
-            ;;
-            *)
-              echo 1
-            ;;
-          esac
-        } 
+        $File = "/tmp/auto.out"
+        $Version = ""
 
-        getVersion() {
-          LINE="$1"
-          FILE="$2"
-          PREFIX="$3"
-          grep -hnr -A2 -B2 --no-group-separator "${LINE}" "${FILE}" | grep "${PREFIX}" | cut -d ":" -f2 | xargs
+        function parse {
+          param (
+           $File,
+            $Pattern,
+            $SubPattern
+          )
+          $FileContent = (Select-String $File -Context 2 -Pattern $Pattern)
+          return $FileContent | Out-String | Select-String -Pattern $SubPattern
         }
-
-        NO_CANARY="None of the plugins that you are using implement the \`canary\` command"
-        CALLING_CANARY="Calling canary hook"
-        CREATED_RELEASE="Created GitHub release" 
-
-        VERSION=""
-        IS_NOT_CANARY=$(lineExists "${NO_CANARY}" "${OUTPUT_FILE}")
-        IS_CANARY=$(lineExists "${CALLING_CANARY}" "${OUTPUT_FILE}")
-
-        if [ "${IS_NOT_CANARY}" -eq 0 ]; then
-          echo "No canary found, no version info needed."
-          VERSION=
-        elif [ "${IS_CANARY}" -eq 0 ]; then
-          echo "Canary found! Grabbing canary version for action output.."
-          VERSION="sha-$(getVersion "${CALLING_CANARY}" "${OUTPUT_FILE}" "HEAD:")"
-        else
-          echo "Version Tagged! Grabbing tag for action output."
-          VERSION="$(getVersion "${CREATED_RELEASE}" "${OUTPUT_FILE}" "tag:")"
-        fi
-
-        echo "::set-output name=version::${VERSION}"
-        echo "Version=${VERSION}"
+          
+        $Options = @( @{
+          Pattern = "Calling canary hook"
+          SubPattern = "HEAD:"
+          Matcher = "got commit sha from head: (.+)"
+          Prefix = "sha-"
+        },@{
+          Pattern = "Created GitHub release"
+          SubPattern = "tag:"
+          Matcher = "Creating release on GitHub for tag: (v.+)"
+        })
+          
+        $Options | ForEach-Object {
+          $Out = parse -File $File -Pattern $_.Pattern -SubPattern $_.SubPattern
+          if ($Out -match $_.Matcher) {
+            $Revision = ($Matches[1] | Out-String)
+            if ($_.Prefix) {
+              $Version = $_.Prefix + $Revision
+            } else {
+              $Version = $Revision
+            }
+          }
+        }
+        Write-Output "Version=$Version"
+        Write-Output "::set-output name=version::$VERSION"
