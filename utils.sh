@@ -53,7 +53,8 @@ downloadAsset() {
   else
     DOWNLOAD_URL="https://github.com/${OWNER}/${REPOSITORY}/releases/download/${VERSION}"
   fi
-  VERSION_NO_PREFIX="$(echo "${VERSION}" | tr 'v' '')"
+
+  VERSION_NO_PREFIX="$(echo "${VERSION}" | tr -d "v")"
   ASSET_WITH_VERSION="$(echo "${ASSET}" | sed "s/{VERSION}/${VERSION_NO_PREFIX}/" | sed "s/{VERSION_NO_PREFIX}/${VERSION_NO_PREFIX}/")"
   DOWNLOAD_URL="${DOWNLOAD_URL}/${ASSET_WITH_VERSION}"
 
