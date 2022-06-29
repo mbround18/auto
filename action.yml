@@ -80,17 +80,17 @@ runs:
     - id: Check & Setup PowerShell
       shell: sh
       run: |
-#        if ! [ -x "$(command -v pwsh)" ]; then
-          OWNER="PowerShell"
-          REPO="PowerShell"
-          BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
-          echo "Fetching latest powershell release..."
-          LATEST_TAG="$(curl https://api.github.com/repos/${OWNER}/${REPO}/releases/latest -s | jq .name -r | xargs)"
-          URL="https://github.com/${OWNER}/${REPO}/releases/download/${LATEST_TAG}/powershell-$(echo "${LATEST_TAG}" | tr 'v' '')-linux-x64.tar.gz"
-          wget -c "${URL}" -O - | tar -xz -C "${BIN_PATH}"
-          echo "Making pwsh executable..."
-          chmod +x "${BIN_PATH}/pwsh"
-#        fi
+        # if ! [ -x "$(command -v pwsh)" ]; then
+        OWNER="PowerShell"
+        REPO="PowerShell"
+        BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
+        echo "Fetching latest powershell release..."
+        LATEST_TAG="$(curl https://api.github.com/repos/${OWNER}/${REPO}/releases/latest -s | jq .name -r | xargs)"
+        URL="https://github.com/${OWNER}/${REPO}/releases/download/${LATEST_TAG}/powershell-$(echo "${LATEST_TAG}" | tr 'v' '')-linux-x64.tar.gz"
+        wget -c "${URL}" -O - | tar -xz -C "${BIN_PATH}"
+        echo "Making pwsh executable..."
+        chmod +x "${BIN_PATH}/pwsh"
+        # fi
 
     - name: Parse Version
       shell: pwsh
