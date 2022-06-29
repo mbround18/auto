@@ -80,7 +80,7 @@ runs:
     - id: Check & Setup PowerShell
       shell: sh
       run: |
-        if ! [ -x "$(command -v pwsh)" ]; then
+#        if ! [ -x "$(command -v pwsh)" ]; then
           OWNER="PowerShell"
           REPO="PowerShell"
           BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
@@ -90,7 +90,7 @@ runs:
           wget -c "${URL}" -O - | tar -xz -C "${BIN_PATH}"
           echo "Making pwsh executable..."
           chmod +x "${BIN_PATH}/pwsh"
-        fi
+#        fi
 
     - name: Parse Version
       shell: pwsh
