@@ -63,7 +63,7 @@ downloadAsset() {
       wget -c "${DOWNLOAD_URL}" -O - | tar -xz -C "${BIN_PATH}"
     ;;
     *.gz)
-      curl -vkL -o - "${DOWNLOAD_URL}" | gunzip > "${BIN_PATH}"
+      curl -vkL -o - "${DOWNLOAD_URL}" | gunzip > "${BINARY_PATH}"
     ;;
   esac
 
