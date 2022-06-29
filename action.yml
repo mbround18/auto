@@ -57,7 +57,7 @@ runs:
 
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
 
-    - id: Check & Setup PowerShell
+    - name: Check & Setup PowerShell
       shell: sh
       run: |
         # if ! [ -x "$(command -v pwsh)" ]; then
