@@ -30,7 +30,7 @@ getLatestVersion() {
     echo "Error: Failed to find executable 'jq'."
   fi
 
-  curl "https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest" -s | jq .name -r | xargs
+  curl "https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest" -s | jq .tag_name -r | xargs
 }
 
 downloadAsset() {
@@ -55,7 +55,7 @@ downloadAsset() {
   fi
 
   VERSION_NO_PREFIX="$(echo "${VERSION}" | tr -d "v")"
-  ASSET_WITH_VERSION="$(echo "${ASSET}" | sed "s/{VERSION}/${VERSION_NO_PREFIX}/" | sed "s/{VERSION_NO_PREFIX}/${VERSION_NO_PREFIX}/")"
+  ASSET_WITH_VERSION="$(echo "${ASSET}" | sed "s/{VERSION}/${VERSION}/" | sed "s/{VERSION_NO_PREFIX}/${VERSION_NO_PREFIX}/")"
   DOWNLOAD_URL="${DOWNLOAD_URL}/${ASSET_WITH_VERSION}"
 
   case "${ASSET_WITH_VERSION}" in
