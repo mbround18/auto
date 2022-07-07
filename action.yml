@@ -49,7 +49,7 @@ runs:
 
     - name: Run Auto
       id: auto
-      shell: sh
+      shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
