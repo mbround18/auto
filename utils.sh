@@ -6,6 +6,7 @@ setup() {
 }
 
 downloadBinary() {
+  echo "::group::Download ${name}"
   OWNER="$1"
   REPOSITORY="$2"
   NAME="$3"
@@ -20,6 +21,7 @@ downloadBinary() {
   echo "Making ${NAME} executable..."
   chmod +x "${BIN_PATH}"
   echo "${NAME} setup complete..."
+  echo "::endgroup::"
 }
 
 getLatestVersion() {
@@ -34,6 +36,7 @@ getLatestVersion() {
 }
 
 downloadAsset() {
+  echo "::group::Download ${name}"
   OWNER="$1"
   REPOSITORY="$2"
   NAME="$3"
@@ -70,4 +73,5 @@ downloadAsset() {
   echo "Making ${NAME} executable..."
   chmod +x "${BINARY_PATH}"
   echo "${NAME} setup complete..."
+  echo "::endgroup::"
 }
