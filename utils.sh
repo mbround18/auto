@@ -48,7 +48,7 @@ downloadAsset() {
   if [ "${VERSION}" = "latest" ]; then
     echo "Fetching latest ${NAME} release..."
     LATEST_TAG="$(getLatestVersion "${OWNER}" "${REPOSITORY}")"
-    VERSION=LATEST_TAG
+    VERSION=${LATEST_TAG}
     DOWNLOAD_URL="https://github.com/${OWNER}/${REPOSITORY}/releases/download/${LATEST_TAG}"
   else
     DOWNLOAD_URL="https://github.com/${OWNER}/${REPOSITORY}/releases/download/${VERSION}"
