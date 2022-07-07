@@ -53,10 +53,12 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
+        set -o pipefail
+        
         OUTPUT_FILE="/tmp/auto.out"
-
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
         exit $?
+        
 
     - name: Check & Setup PowerShell
       shell: sh
