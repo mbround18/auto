@@ -61,10 +61,10 @@ runs:
     - name: Check & Setup PowerShell
       shell: sh
       run: |
-        # if ! [ -x "$(command -v pwsh)" ]; then
-        . "${GITHUB_ACTION_PATH}/utils.sh"
-        downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
-        # fi
+        if ! [ -x "$(command -v pwsh)" ]; then
+          . "${GITHUB_ACTION_PATH}/utils.sh"
+          downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
+        fi
 
     - name: Parse Version
       shell: pwsh
