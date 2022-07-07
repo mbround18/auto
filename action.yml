@@ -30,22 +30,28 @@ runs:
     - name: Setup Bins
       shell: sh
       run: |
+        echo "::group::Setup Bin Folder"
         . "${GITHUB_ACTION_PATH}/utils.sh"
         setup
         echo "${BIN_PATH}" >> $GITHUB_PATH
+        echo "::endgroup::"
 
     - name: Setup JQ
       shell: sh
       if: inputs.autoVersion == 'latest'
       run: |
+        echo "::group::Setup jq"
         . "${GITHUB_ACTION_PATH}/utils.sh"
         downloadBinary "stedolan" "jq" "jq" "jq-${{inputs.jqVersion}}" "jq-linux64"
+        echo "::endgroup::"
 
     - name: Setup Auto
       shell: sh
       run: |
+        echo "::group::Setup auto"
         . "${GITHUB_ACTION_PATH}/utils.sh"
         downloadAsset "intuit" "auto" "auto" "${{ inputs.autoVersion }}" "auto-linux.gz"
+        echo "::endgroup::"
 
     - name: Run Auto
       id: auto
@@ -53,25 +59,31 @@ runs:
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
+        echo "::group::Run Auto"
         set -o pipefail
         
         OUTPUT_FILE="/tmp/auto.out"
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
         exit $?
+        echo "::endgroup::"
         
 
     - name: Check & Setup PowerShell
       shell: sh
       run: |
         if ! [ -x "$(command -v pwsh)" ]; then
+          echo "::group::Setup PowerShell"
           . "${GITHUB_ACTION_PATH}/utils.sh"
           downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
+          echo "::endgroup::"
         fi
 
     - name: Parse Version
       shell: pwsh
       id: version
       run: |
+        Write-Output "::group::Parse Version"
+        
         $File = "/tmp/auto.out"
         $Version = ""
 
@@ -109,3 +121,4 @@ runs:
         }
         Write-Output "Version=$Version"
         Write-Output "::set-output name=version::$Version"
+        Write-Output "::endgroup::"
