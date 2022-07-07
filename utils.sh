@@ -6,13 +6,12 @@ setup() {
 }
 
 downloadBinary() {
-  echo "::group::Download ${name}"
   OWNER="$1"
   REPOSITORY="$2"
   NAME="$3"
   VERSION="$4"
   ASSET="$5"
-
+  echo "::group::Download ${NAME}"
   echo "Setting ${NAME} path..."
   BIN_PATH="${GITHUB_ACTION_PATH}/.bin/${NAME}"
   echo "BIN_PATH=${BIN_PATH}"
@@ -36,12 +35,12 @@ getLatestVersion() {
 }
 
 downloadAsset() {
-  echo "::group::Download ${name}"
   OWNER="$1"
   REPOSITORY="$2"
   NAME="$3"
   VERSION="$4"
   ASSET="$5"
+  echo "::group::Download ${NAME}"
 
   echo "Setting ${NAME} path..."
   BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
