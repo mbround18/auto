@@ -78,6 +78,7 @@ runs:
       run: echo "::set-output name=bin::$(realpath "${{ github.action_path }}/.bin")"
 
     - name: Cache Powershell
+      if: powershell-cache
       uses: actions/cache@v3
       with:
         path: ${{ steps.action-path.outputs.bin }}
@@ -85,7 +86,7 @@ runs:
 
     - name: Check & Setup PowerShell
       shell: sh
-      if: steps.cache.outputs.cache-hit != 'true'
+      if: steps.powershell-cache.outputs.cache-hit != 'true'
       run: |
         if ! [ -x "$(command -v pwsh)" ]; then
           echo "::group::Setup PowerShell"
