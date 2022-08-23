@@ -66,10 +66,16 @@ runs:
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
         exit $?
         echo "::endgroup::"
-        
+
+    - name: Cache Powershell
+      uses: actions/cache@v3
+      with:
+        path: ${{ env.GITHUB_ACTION_PATH }}/.bin
+        key: ${{ runner.os }}-${{ hashFiles(env.GITHUB_ACTION_PATH + '/.bin/*') }}
 
     - name: Check & Setup PowerShell
       shell: sh
+      if: steps.cache.outputs.cache-hit != 'true'
       run: |
         if ! [ -x "$(command -v pwsh)" ]; then
           echo "::group::Setup PowerShell"
