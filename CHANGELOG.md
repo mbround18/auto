@@ -1,3 +1,17 @@
+# v0.0.3 (Tue Aug 23 2022)
+
+#### ⚠️ Pushed to `main`
+
+- Linted ([@mbruno-kr](https://github.com/mbruno-kr))
+- Update utils.sh ([@mbruno-kr](https://github.com/mbruno-kr))
+- Update README.md ([@mbruno-kr](https://github.com/mbruno-kr))
+
+#### Authors: 1
+
+- Michael Bruno ([@mbruno-kr](https://github.com/mbruno-kr))
+
+---
+
 # v0.0.2 (Tue Aug 23 2022)
 
 #### ⚠️ Pushed to `main`
