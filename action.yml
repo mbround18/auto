@@ -61,7 +61,7 @@ runs:
       run: |
         echo "::group::Run Auto"
         set -o pipefail
-        
+
         OUTPUT_FILE="/tmp/auto.out"
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
         exit $?
@@ -83,14 +83,13 @@ runs:
           downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
           echo "::endgroup::"
         fi
-        
 
     - name: Parse Version
       shell: pwsh
       id: version
       run: |
         Write-Output "::group::Parse Version"
-        
+
         $File = "/tmp/auto.out"
         $Version = ""
 
