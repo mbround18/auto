@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+# Temp Update
+
 setup() {
   export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
   mkdir -p "${BIN_PATH}"
