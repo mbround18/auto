@@ -7,6 +7,10 @@ setup() {
   mkdir -p "${BIN_PATH}"
 }
 
+normalizePath() {
+  echo "${1}"
+}
+
 downloadBinary() {
   OWNER="$1"
   REPOSITORY="$2"

@@ -67,10 +67,14 @@ runs:
         exit $?
         echo "::endgroup::"
 
+    - name: Action Paths
+      id: action-path
+      run: echo "::set-output name=bin::$(realpath "${{ github.action_path }}/.bin")"
+
     - name: Cache Powershell
       uses: actions/cache@v3
       with:
-        path: ${{ github.action_path }}/.bin
+        path: ${{ steps.action-path.outputs.bin }}
         key: ${{ runner.os }}-PowerShell
 
     - name: Check & Setup PowerShell
