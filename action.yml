@@ -20,53 +20,105 @@ inputs:
     description: "Auto command to run"
     required: true
     default: "shipit -v"
+outputs:
+  version:
+    description: "Outputs the auto version."
+    value: ${{ steps.version.outputs.version }}
 runs:
   using: "composite"
   steps:
     - name: Setup Bins
-      shell: bash
+      shell: sh
       run: |
-        export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
-        mkdir -p "${BIN_PATH}"
+        echo "::group::Setup Bin Folder"
+        . "${GITHUB_ACTION_PATH}/utils.sh"
+        setup
         echo "${BIN_PATH}" >> $GITHUB_PATH
+        echo "::endgroup::"
 
     - name: Setup JQ
-      shell: bash
+      shell: sh
       if: inputs.autoVersion == 'latest'
       run: |
-        echo "Setting jq path..."
-        export JQ_PATH="${GITHUB_ACTION_PATH}/.bin/jq"
-        echo "JQ_PATH=${JQ_PATH}"
-        echo "Downloading jq..."
-        wget -O "${JQ_PATH}" "https://github.com/stedolan/jq/releases/download/jq-${{inputs.jqVersion}}/jq-linux64"
-        echo "Making jq exectuabe..."
-        chmod +x "${JQ_PATH}"
-        echo "jq setup complete..."
+        echo "::group::Setup jq"
+        . "${GITHUB_ACTION_PATH}/utils.sh"
+        downloadBinary "stedolan" "jq" "jq" "jq-${{inputs.jqVersion}}" "jq-linux64"
+        echo "::endgroup::"
 
     - name: Setup Auto
-      shell: bash
+      shell: sh
       run: |
-        echo "Setting auto path..."
-        export AUTO_PATH="${GITHUB_ACTION_PATH}/.bin/auto"
-        echo "AUTO_PATH=${AUTO_PATH}"
+        echo "::group::Setup auto"
+        . "${GITHUB_ACTION_PATH}/utils.sh"
+        downloadAsset "intuit" "auto" "auto" "${{ inputs.autoVersion }}" "auto-linux.gz"
+        echo "::endgroup::"
 
-        export AUTO_URL=""
-        echo "Downloading auto..."
-        if [ "${{ inputs.autoVersion }}" = "latest" ]; then
-          echo "Fetching latest auto release..."
-          export LATEST_TAG="$(curl https://api.github.com/repos/intuit/auto/releases/latest -s | jq .name -r | xargs)"
-          AUTO_URL="https://github.com/intuit/auto/releases/download/${LATEST_TAG}/auto-linux.gz"
-        else
-          AUTO_URL="https://github.com/intuit/auto/releases/download/${{ inputs.autoVersion }}/auto-linux.gz"
-        fi
-        curl -vkL -o - "${AUTO_URL}" | gunzip > "${AUTO_PATH}"
-        echo "Making auto executable..."
-        chmod +x "${AUTO_PATH}"
-        echo "auto setup complete..."
-
-    - name: Setup Bins
+    - name: Run Auto
+      id: auto
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
       run: |
-        auto ${{ inputs.command }}
+        echo "::group::Run Auto"
+        set -o pipefail
+        
+        OUTPUT_FILE="/tmp/auto.out"
+        auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
+        exit $?
+        echo "::endgroup::"
+        
+
+    - name: Check & Setup PowerShell
+      shell: sh
+      run: |
+        if ! [ -x "$(command -v pwsh)" ]; then
+          echo "::group::Setup PowerShell"
+          . "${GITHUB_ACTION_PATH}/utils.sh"
+          downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
+          echo "::endgroup::"
+        fi
+
+    - name: Parse Version
+      shell: pwsh
+      id: version
+      run: |
+        Write-Output "::group::Parse Version"
+        
+        $File = "/tmp/auto.out"
+        $Version = ""
+
+        function parse {
+          param (
+           $File,
+            $Pattern,
+            $SubPattern
+          )
+          $FileContent = (Select-String $File -Context 2 -Pattern $Pattern)
+          return $FileContent | Out-String | Select-String -Pattern $SubPattern
+        }
+          
+        $Options = @( @{
+          Pattern = "Calling canary hook"
+          SubPattern = "HEAD:"
+          Matcher = "got commit sha from head: (.+)"
+          Prefix = "sha-"
+        },@{
+          Pattern = "Created GitHub release"
+          SubPattern = "tag:"
+          Matcher = "Creating release on GitHub for tag: (v.+)"
+        })
+          
+        $Options | ForEach-Object {
+          $Out = parse -File $File -Pattern $_.Pattern -SubPattern $_.SubPattern
+          if ($Out -match $_.Matcher) {
+            $Revision = ($Matches[1] | Out-String)
+            if ($_.Prefix) {
+              $Version = $_.Prefix + $Revision
+            } else {
+              $Version = $Revision
+            }
+          }
+        }
+        Write-Output "Version=$Version"
+        Write-Output "::set-output name=version::$Version"
+        Write-Output "::endgroup::"
