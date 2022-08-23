@@ -83,6 +83,7 @@ runs:
           downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
           echo "::endgroup::"
         fi
+        
 
     - name: Parse Version
       shell: pwsh
