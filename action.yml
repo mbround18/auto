@@ -69,6 +69,7 @@ runs:
 
     - name: Action Paths
       id: action-path
+      shell: sh
       run: echo "::set-output name=bin::$(realpath "${{ github.action_path }}/.bin")"
 
     - name: Cache Powershell
