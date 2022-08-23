@@ -70,7 +70,7 @@ runs:
     - name: Cache Powershell
       uses: actions/cache@v3
       with:
-        path: ${{ env.GITHUB_ACTION_PATH }}/.bin
+        path: ${{ github.action_path }}/.bin
         key: ${{ runner.os }}-PowerShell
 
     - name: Check & Setup PowerShell
