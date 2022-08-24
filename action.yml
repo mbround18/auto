@@ -67,11 +67,6 @@ runs:
         exit $?
         echo "::endgroup::"
 
-
-
-
-
-
     - name: Action Paths
       id: action-path
       shell: sh
@@ -115,10 +110,9 @@ runs:
         }
           
         $Options = @( @{
-          Pattern = "Calling canary hook"
-          SubPattern = "HEAD:"
-          Matcher = "got commit sha from head: (.+)"
-          Prefix = "sha-"
+          Pattern = "Published canary"
+          SubPattern = "version:"
+          Matcher = "Published canary version: (.+)"
         },@{
           Pattern = "Created GitHub release"
           SubPattern = "tag:"
