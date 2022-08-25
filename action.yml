@@ -61,15 +61,27 @@ runs:
       run: |
         echo "::group::Run Auto"
         set -o pipefail
-        
+
         OUTPUT_FILE="/tmp/auto.out"
         auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
         exit $?
         echo "::endgroup::"
-        
+
+    - name: Action Paths
+      id: action-path
+      shell: sh
+      run: echo "::set-output name=bin::$(realpath "${{ github.action_path }}/.bin")"
+
+    - name: Cache Powershell
+      id: powershell-cache
+      uses: actions/cache@v3
+      with:
+        path: ${{ steps.action-path.outputs.bin }}
+        key: ${{ runner.os }}-PowerShell
 
     - name: Check & Setup PowerShell
       shell: sh
+      if: steps.powershell-cache.outputs.cache-hit != 'true'
       run: |
         if ! [ -x "$(command -v pwsh)" ]; then
           echo "::group::Setup PowerShell"
@@ -83,7 +95,7 @@ runs:
       id: version
       run: |
         Write-Output "::group::Parse Version"
-        
+
         $File = "/tmp/auto.out"
         $Version = ""
 
@@ -98,10 +110,9 @@ runs:
         }
           
         $Options = @( @{
-          Pattern = "Calling canary hook"
-          SubPattern = "HEAD:"
-          Matcher = "got commit sha from head: (.+)"
-          Prefix = "sha-"
+          Pattern = "Published canary"
+          SubPattern = "version:"
+          Matcher = "Published canary version: (.+)"
         },@{
           Pattern = "Created GitHub release"
           SubPattern = "tag:"
