@@ -1,5 +1,5 @@
 {
-  "plugins": ["git-tag"],
+  "plugins": ["git-tag", ["upload-assets", { "assets": ["./README.md"] }]],
   "author": "mbround18 <12646562+mbround18@users.noreply.github.com>",
   "onlyPublishWithReleaseLabel": false,
   "noDefaultLabels": true,

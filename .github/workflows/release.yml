@@ -15,7 +15,12 @@ jobs:
           token: ${{ secrets.GH_TOKEN }} # <- This is required
 
       - run: git fetch --tags
+
       - name: Release
+        id: auto
         uses: ./
         with:
           token: ${{ secrets.GH_TOKEN }}
+
+      - run: |
+          echo "Version ${{ steps.auto.outputs.version }}" >> $GITHUB_STEP_SUMMARY

@@ -30,42 +30,28 @@ runs:
     - name: Setup Bins
       shell: sh
       run: |
-        echo "::group::Setup Bin Folder"
-        . "${GITHUB_ACTION_PATH}/utils.sh"
-        setup
-        echo "${BIN_PATH}" >> $GITHUB_PATH
-        echo "::endgroup::"
+        . "${GITHUB_ACTION_PATH}/scripts/setup.sh"
+        setup_bin
 
     - name: Setup JQ
       shell: sh
       if: inputs.autoVersion == 'latest'
       run: |
-        echo "::group::Setup jq"
-        . "${GITHUB_ACTION_PATH}/utils.sh"
-        downloadBinary "stedolan" "jq" "jq" "jq-${{inputs.jqVersion}}" "jq-linux64"
-        echo "::endgroup::"
+        . "${GITHUB_ACTION_PATH}/scripts/setup.sh"
+        setup_jq "${{ inputs.jqVersion }}"
 
     - name: Setup Auto
       shell: sh
       run: |
-        echo "::group::Setup auto"
-        . "${GITHUB_ACTION_PATH}/utils.sh"
-        downloadAsset "intuit" "auto" "auto" "${{ inputs.autoVersion }}" "auto-linux.gz"
-        echo "::endgroup::"
+        . "${GITHUB_ACTION_PATH}/scripts/setup.sh"
+        setup_auto "${{ inputs.autoVersion }}"
 
     - name: Run Auto
       id: auto
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
-      run: |
-        echo "::group::Run Auto"
-        set -o pipefail
-
-        OUTPUT_FILE="/tmp/auto.out"
-        auto ${{ inputs.command }} 2>&1 | tee "${OUTPUT_FILE}"
-        exit $?
-        echo "::endgroup::"
+      run: . "${GITHUB_ACTION_PATH}/scripts/exec_auto.sh" "${{ inputs.command }}"
 
     - name: Action Paths
       id: action-path
@@ -94,42 +80,4 @@ runs:
       shell: pwsh
       id: version
       run: |
-        Write-Output "::group::Parse Version"
-
-        $File = "/tmp/auto.out"
-        $Version = ""
-
-        function parse {
-          param (
-           $File,
-            $Pattern,
-            $SubPattern
-          )
-          $FileContent = (Select-String $File -Context 2 -Pattern $Pattern)
-          return $FileContent | Out-String | Select-String -Pattern $SubPattern
-        }
-          
-        $Options = @( @{
-          Pattern = "Published canary"
-          SubPattern = "version:"
-          Matcher = "Published canary version: (.+)"
-        },@{
-          Pattern = "Created GitHub release"
-          SubPattern = "tag:"
-          Matcher = "Creating release on GitHub for tag: (v.+)"
-        })
-          
-        $Options | ForEach-Object {
-          $Out = parse -File $File -Pattern $_.Pattern -SubPattern $_.SubPattern
-          if ($Out -match $_.Matcher) {
-            $Revision = ($Matches[1] | Out-String)
-            if ($_.Prefix) {
-              $Version = $_.Prefix + $Revision
-            } else {
-              $Version = $Revision
-            }
-          }
-        }
-        Write-Output "Version=$Version"
-        "version=$Version" >> $GITHUB_OUTPUT
-        Write-Output "::endgroup::"
+        Invoke-Expression "$env:GITHUB_ACTION_PATH/scripts/version.ps1"
