@@ -94,7 +94,7 @@ runs:
       run: |
         if ! [ -x "$(command -v pwsh)" ]; then
           echo "::group::Setup PowerShell"
-          . "${GITHUB_ACTION_PATH}/utils.sh"
+          . "${GITHUB_ACTION_PATH}/scripts/utils.sh"
           downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
           echo "::endgroup::"
         fi
