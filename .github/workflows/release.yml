@@ -1,9 +1,6 @@
 name: Release
 
-on:
-  push:
-    paths:
-      - "action.yml"
+on: [push]
 
 jobs:
   release:
