@@ -60,7 +60,7 @@ runs:
       uses: actions/cache@v3
       with:
         path: "${{ env.GITHUB_ACTION_PATH }}/.bin"
-        key: ${{ steps.auto_version.outputs.auto_version }}-{{ inputs.jqVersion }}
+        key: ${{ steps.auto_version.outputs.auto_version }}-${{ inputs.jqVersion }}
 
     - name: Setup Auto
       shell: sh
