@@ -6,7 +6,7 @@ set -o pipefail
 OUTPUT_FILE="/tmp/auto.out"
 
 
-exec "auto ${1}" 2>&1 | tee "${OUTPUT_FILE}"
+exec "${GITHUB_ACTION_PATH}/.bin/auto ${1}" 2>&1 | tee "${OUTPUT_FILE}"
 
 AUTO_EXIT="$?"
 
