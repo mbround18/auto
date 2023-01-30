@@ -40,11 +40,32 @@ runs:
         . "${GITHUB_ACTION_PATH}/scripts/setup.sh"
         setup_jq "${{ inputs.jqVersion }}"
 
-    - name: Setup Auto
+    - name: Get Auto Version
+      id: auto_version
       shell: sh
       run: |
+        VERSION="${{ inputs.autoVersion }}"
+
+        if [ "${VERSION}" = "latest" ]; then
+          LATEST_TAG="$(getLatestVersion "intuit" "auto")"
+          VERSION=${LATEST_TAG}
+        fi
+
+        echo "auto_version=${VERSION}" >> $GITHUB_OUTPUT
+
+    - name: Cache Auto Version
+      id: cache-auto
+      uses: actions/cache@v3
+      with:
+        path: "${{ env.GITHUB_ACTION_PATH }}/.bin"
+        key: ${{ steps.auto_version.outputs.auto_version }}-{{ inputs.jqVersion }}
+
+    - name: Setup Auto
+      shell: sh
+      if: steps.cache-auto.outputs.cache-hit != 'true'
+      run: |
         . "${GITHUB_ACTION_PATH}/scripts/setup.sh"
-        setup_auto "${{ inputs.autoVersion }}"
+        setup_auto "${{ steps.auto_version.outputs.auto_version }}"
 
     - name: Run Auto
       id: auto
