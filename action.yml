@@ -74,20 +74,7 @@ runs:
       shell: bash
       env:
         GH_TOKEN: "${{ inputs.token }}"
-      run: |
-        auto --version
-        echo "::group::Run Auto"
-        set -o pipefail
-
-        OUTPUT_FILE="/tmp/auto.out"
-
-
-        exec "auto ${{ inputs.command }}" 2>&1 | tee "${OUTPUT_FILE}"
-
-        AUTO_EXIT="$?"
-
-        echo "::endgroup::"
-        exit $AUTO_EXIT
+      run: . "${GITHUB_ACTION_PATH}/scripts/exec_auto.sh" "${{ inputs.command }}"
 
     - name: Action Paths
       id: action-path
