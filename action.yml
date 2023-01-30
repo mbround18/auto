@@ -44,6 +44,8 @@ runs:
       id: auto_version
       shell: sh
       run: |
+        . "${GITHUB_ACTION_PATH}/scripts/utils.sh"
+        
         VERSION="${{ inputs.autoVersion }}"
 
         if [ "${VERSION}" = "latest" ]; then
