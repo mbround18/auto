@@ -36,7 +36,12 @@ getLatestVersion() {
     echo "Error: Failed to find executable 'jq'."
   fi
 
-  curl "https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest" -s | jq .tag_name -r | xargs
+  LATEST=$(curl "https://api.github.com/repos/${OWNER}/${REPOSITORY}/releases/latest" -s | jq .tag_name -r | xargs)
+  if [ "${LATEST}" == "null" ]; then
+    echo "latest"
+  else 
+    echo "${LATEST}"
+  fi
 }
 
 downloadAsset() {
