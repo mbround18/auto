@@ -99,7 +99,7 @@ runs:
 #        fi
 
     - name: Parse Version
-      shell: sh
+      shell: bash
       id: version
       run: |
         VERSION="$(. "${GITHUB_ACTION_PATH}/scripts/exec_auto.sh" "/tmp/auto.out")"
