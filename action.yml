@@ -82,8 +82,10 @@ runs:
       run: |
         VERSION="$(. "${GITHUB_ACTION_PATH}/scripts/parse.sh")"
         {
-          echo "## Auto Action"
-          echo "Release Version \`${VERSION}\`"
+          if [ -z "${VERSION}" ]; then 
+            echo "## Auto Action"
+            echo "Release Version \`${VERSION}\`"
+          fi 
         } >> $GITHUB_STEP_SUMMARY
-        echo echo "Release Version ${VERSION}"
+        echo "Release Version ${VERSION}"
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
