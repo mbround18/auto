@@ -1,8 +1,11 @@
 #!/usr/bin/env bash
 
+set -o pipefail
+
 cd "$(dirname "$0")" || exit 1
 
-FILE="${1}"
+DEFAULT_FILE="/tmp/${GITHUB_RUN_ID:-"unknown"}-auto.out"
+FILE="${1:-"${DEFAULT_FILE}"}"
 
 if [ -z "${FILE}" ]; then
   echo "Error: $FILE is not found!"

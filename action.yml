@@ -45,7 +45,7 @@ runs:
       shell: sh
       run: |
         . "${GITHUB_ACTION_PATH}/scripts/utils.sh"
-        
+
         VERSION="${{ inputs.autoVersion }}"
 
         if [ "${VERSION}" = "latest" ]; then
@@ -76,32 +76,14 @@ runs:
         GH_TOKEN: "${{ inputs.token }}"
       run: . "${GITHUB_ACTION_PATH}/scripts/exec_auto.sh" "${{ inputs.command }}"
 
-#    - name: Action Paths
-#      id: action-path
-#      shell: sh
-#      run: echo "bin=$(realpath "${{ github.action_path }}/.bin")" >> $GITHUB_OUTPUT
-#    - name: Cache Powershell
-#      id: powershell-cache
-#      uses: actions/cache@v3
-#      with:
-#        path: ${{ steps.action-path.outputs.bin }}
-#        key: ${{ runner.os }}-PowerShell
-#
-#    - name: Check & Setup PowerShell
-#      shell: sh
-#      if: steps.powershell-cache.outputs.cache-hit != 'true'
-#      run: |
-#        if ! [ -x "$(command -v pwsh)" ]; then
-#          echo "::group::Setup PowerShell"
-#          . "${GITHUB_ACTION_PATH}/scripts/utils.sh"
-#          downloadAsset "PowerShell" "PowerShell" "pwsh" "${{ inputs.autoVersion }}" "powershell-{VERSION_NO_PREFIX}-linux-x64.tar.gz"
-#          echo "::endgroup::"
-#        fi
-
     - name: Parse Version
       shell: bash
       id: version
       run: |
-        VERSION="$(. "${GITHUB_ACTION_PATH}/scripts/exec_auto.sh" "/tmp/auto.out")"
-        echo "Version=${VERSION}"
+        VERSION="$(. "${GITHUB_ACTION_PATH}/scripts/parse.sh")"
+        {
+          echo "## Auto Action"
+          echo "Release Version \`${VERSION}\`"
+        } >> $GITHUB_STEP_SUMMARY
+        echo echo "Release Version ${VERSION}"
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
