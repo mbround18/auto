@@ -81,11 +81,11 @@ runs:
       id: version
       run: |
         VERSION="$(. "${GITHUB_ACTION_PATH}/scripts/parse.sh")"
-        {
-          if [ -z "${VERSION}" ]; then 
-            echo "## Auto Action"
-            echo "Release Version \`${VERSION}\`"
-          fi 
-        } >> $GITHUB_STEP_SUMMARY
-        echo "Release Version ${VERSION}"
+        if [ ! -z "${VERSION}" ]; then
+          {
+              echo "## Auto Action"
+              echo "Release Version: \`${VERSION:-"unknown"}\`"
+          } >> $GITHUB_STEP_SUMMARY
+          echo "Release Version ${VERSION}"
+        fi 
         echo "version=${VERSION}" >> $GITHUB_OUTPUT
