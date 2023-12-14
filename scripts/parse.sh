@@ -1,11 +1,15 @@
 #!/usr/bin/env bash
 
+echo "::group::Parse Auto"
 set -o pipefail
+echo "Parsing auto output..."
 
 cd "$(dirname "$0")" || exit 1
 
-DEFAULT_FILE="/tmp/${GITHUB_RUN_ID:-"unknown"}-auto.out"
+
+DEFAULT_FILE="${GITHUB_ACTION_PATH}/.tmp/${GITHUB_RUN_ID:-"unknown"}-auto.out"
 FILE="${1:-"${DEFAULT_FILE}"}"
+echo "FILE=${FILE}"
 
 if [ -z "${FILE}" ]; then
   echo "Error: $FILE is not found!"
