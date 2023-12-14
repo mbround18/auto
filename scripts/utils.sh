@@ -1,9 +1,14 @@
 #!/usr/bin/env sh
 
 setup() {
+  echo "::group::Setup"
   export BIN_PATH="${GITHUB_ACTION_PATH}/.bin"
   mkdir -p "${BIN_PATH}"
   echo "${BIN_PATH}" >> $GITHUB_PATH
+
+
+  mkdir -p "${GITHUB_ACTION_PATH}/.tmp"
+  echo "::endgroup::"
 }
 
 normalizePath() {
