@@ -11,7 +11,7 @@ if ! [ -d "${TMP_DIRECTORY}" ]; then
   mkdir -p "${TMP_DIRECTORY}"
 fi
 
-eval "auto ${1}" 2>&1 | tee "${OUTPUT_FILE}"
+eval "auto ${1}" |& tee "${OUTPUT_FILE}"
 
 AUTO_EXIT="$?"
 
