@@ -12,6 +12,10 @@ if ! [ -d "${TMP_DIRECTORY}" ]; then
   mkdir -p "${TMP_DIRECTORY}"
 fi
 
+echo "Running auto..."
+echo "BIN_PATH=${BIN_PATH}"
+echo "OUTPUT_FILE=${OUTPUT_FILE}"
+echo "Executing: ${BIN_PATH} ${1} |& tee ${OUTPUT_FILE}"
 eval "${BIN_PATH} ${1}" |& tee "${OUTPUT_FILE}"
 
 AUTO_EXIT="$?"
