@@ -57,7 +57,7 @@ runs:
 
     - name: Cache Auto Version
       id: cache-auto
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: "${{ env.GITHUB_ACTION_PATH }}/.bin"
         key: ${{ steps.auto_version.outputs.auto_version }}-${{ inputs.jqVersion }}
